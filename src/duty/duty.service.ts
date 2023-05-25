@@ -64,13 +64,17 @@ export class DutyService {
   protected async checkAll(epoch: Epoch, stateSlot: Slot): Promise<any> {
     this.summary.clear();
     this.logger.log('Checking duties of validators');
-    await allSettled([
+    const duties = [
       this.state.check(epoch, stateSlot),
       this.attestation.check(epoch, stateSlot),
       this.sync.check(epoch, stateSlot),
       this.propose.check(epoch),
-      this.withdrawals.check(epoch),
-    ]);
+    ]
+    if (epoch >= 194048){
+      duties.push(this.withdrawals.check(epoch))
+      this.logger.log('Epoch less than 194,048 (Shapella), skip withdrawal duties check');
+    }
+    await allSettled(duties);
     // must be done after all duties check
     await this.fillCurrentEpochMetadata(epoch);
     // calculate rewards after check all duties
