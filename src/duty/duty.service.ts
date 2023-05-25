@@ -70,9 +70,10 @@ export class DutyService {
       this.sync.check(epoch, stateSlot),
       this.propose.check(epoch),
     ]
-    if (epoch >= 194048){
-      duties.push(this.withdrawals.check(epoch))
+    if (epoch < 194048){
       this.logger.log('Epoch less than 194,048 (Shapella), skip withdrawal duties check');
+    } else {
+      duties.push(this.withdrawals.check(epoch))
     }
     await allSettled(duties);
     // must be done after all duties check
