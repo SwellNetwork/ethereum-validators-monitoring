@@ -3,6 +3,7 @@ on:
   push:
     branches: [zonb-w22-s02]
   workflow_dispatch:
+  pull_request:
 permissions:
   contents: read
   actions: read
